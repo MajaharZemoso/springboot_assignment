@@ -48,13 +48,6 @@ public class Events {
         this.venue = venue;
     }
 
-    public Events(String name, String venue, Set<Users> users, Set<Organizers> organizers) {
-        this.name = name;
-        this.venue = venue;
-        this.users = users;
-        this.organizers = organizers;
-    }
-
     public Events(int id, String name) {
         this.id = id;
         this.name = name;

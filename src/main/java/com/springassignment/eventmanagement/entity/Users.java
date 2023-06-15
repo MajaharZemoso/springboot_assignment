@@ -35,21 +35,6 @@ public class Users {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Events> events = new HashSet<>();
 
-    public Users(String firstName, String lastName, int age, String gender, Set<Events> events) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.gender = gender;
-        this.events = events;
-    }
-
-    public Users(String firstName, String lastName, int age, String gender) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.gender = gender;
-    }
-
     public Users(int id, String firstName, String lastName, int age, String gender) {
         this.id = id;
         this.firstName = firstName;

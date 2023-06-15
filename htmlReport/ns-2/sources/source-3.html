@@ -1,0 +1,188 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.springassignment.eventmanagement.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (com.springassignment.eventmanagement.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64.3%
+  </span>
+  <span class="absValue">
+    (18/28)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.springassignment.eventmanagement.controller;
+&nbsp;
+&nbsp;import com.springassignment.eventmanagement.dto.UsersDTO;
+&nbsp;import com.springassignment.eventmanagement.entity.Users;
+&nbsp;import com.springassignment.eventmanagement.services.UserService;
+&nbsp;import org.modelmapper.ModelMapper;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.NoSuchElementException;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;api/users&quot;)
+&nbsp;public class UserController {
+&nbsp;
+&nbsp;    private UserService userService;
+&nbsp;
+&nbsp;    private ModelMapper modelMapper;
+&nbsp;
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public UserController(UserService theUserService, ModelMapper modelMapper) {</b>
+<b class="fc">&nbsp;        userService = theUserService;</b>
+<b class="fc">&nbsp;        this.modelMapper = modelMapper;</b>
+&nbsp;    }
+&nbsp;    @GetMapping
+&nbsp;    public List&lt;UsersDTO&gt; getAllUsers() {
+<b class="nc">&nbsp;        List&lt;Users&gt; usersList = userService.findAll();</b>
+<b class="nc">&nbsp;        return usersList.stream()</b>
+<b class="nc">&nbsp;                .map(this::convertToDto)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;UsersDTO&gt; getUserById(@PathVariable(&quot;id&quot;) Integer id) {
+&nbsp;        try {
+<b class="fc">&nbsp;            Users users = userService.findById(id);</b>
+<b class="fc">&nbsp;            UsersDTO usersDTO = convertToDto(users);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(usersDTO);</b>
+<b class="fc">&nbsp;        } catch (NoSuchElementException e) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    public ResponseEntity&lt;UsersDTO&gt; createUser(@RequestBody UsersDTO usersDTO) {
+<b class="fc">&nbsp;        Users users = convertToEntity(usersDTO);</b>
+<b class="fc">&nbsp;        Users createdUser = userService.save(users);</b>
+<b class="fc">&nbsp;        UsersDTO createdUserDTO = convertToDto(createdUser);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;UsersDTO&gt; updateUser(@PathVariable(&quot;id&quot;) int id, @RequestBody UsersDTO usersDTO) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Users users = convertToEntity(usersDTO);</b>
+<b class="nc">&nbsp;            Users updatedUser = userService.update(id, users);</b>
+<b class="nc">&nbsp;            UsersDTO updatedUserDTO = convertToDto(updatedUser);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(updatedUserDTO);</b>
+<b class="nc">&nbsp;        } catch (NoSuchElementException e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; deleteUser(@PathVariable(&quot;id&quot;) Integer id) {
+&nbsp;        try {
+<b class="fc">&nbsp;            userService.deleteById(id);</b>
+<b class="fc">&nbsp;            return ResponseEntity.noContent().build();</b>
+<b class="fc">&nbsp;        } catch (NoSuchElementException e) {</b>
+<b class="fc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private UsersDTO convertToDto(Users users) {
+<b class="fc">&nbsp;        return modelMapper.map(users, UsersDTO.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private Users convertToEntity(UsersDTO usersDTO) {
+<b class="fc">&nbsp;        return modelMapper.map(usersDTO, Users.class);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-15 22:29</div>
+</div>
+</body>
+</html>

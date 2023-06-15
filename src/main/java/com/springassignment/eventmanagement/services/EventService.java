@@ -14,4 +14,8 @@ public interface EventService {
     public void deleteById(int theId);
 
     public Events update(int theId, Events theEvents);
+
+    public Events assignUserToEvent(int eventId, int userid);
+
+    public Events assignOrganizersToEvent(int eventId, int organizerid);
 }

@@ -32,9 +32,6 @@ public class OrganizerServiceImpl implements OrganizerService{
         if(result.isPresent()){
             theOrganizer = result.get();
         }
-        else{
-            throw new RuntimeException("Did not find Event id : "+theId);
-        }
         return theOrganizer;
     }
 
@@ -59,8 +56,7 @@ public class OrganizerServiceImpl implements OrganizerService{
             theEvent.setLocation(updatedEvent.getLocation());
             organizerRepository.save(theEvent);
             return theEvent;
-        } else {
-            throw new RuntimeException("Did not find Event id : " + theId);
         }
+        return updatedEvent;
     }
 }

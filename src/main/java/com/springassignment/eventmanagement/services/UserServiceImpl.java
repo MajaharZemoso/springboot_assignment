@@ -32,9 +32,6 @@ public class UserServiceImpl implements UserService{
         if(result.isPresent()){
             theUsers = result.get();
         }
-        else{
-            throw new RuntimeException("Did not find User id : "+theId);
-        }
         return theUsers;
     }
 
@@ -61,8 +58,7 @@ public class UserServiceImpl implements UserService{
             theEvent.setGender(updatedEvent.getGender());
             userRepository.save(theEvent);
             return theEvent;
-        } else {
-            throw new RuntimeException("Did not find Event id : " + theId);
         }
+        return updatedEvent;
     }
 }

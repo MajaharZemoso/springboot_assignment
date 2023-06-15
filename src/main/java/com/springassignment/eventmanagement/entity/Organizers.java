@@ -30,12 +30,6 @@ public class Organizers {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Events> events = new HashSet<>();
 
-    public Organizers(String name, String location, Set<Events> events) {
-        this.name = name;
-        this.location = location;
-        this.events = events;
-    }
-
     public Organizers(String name, String location) {
         this.name = name;
         this.location = location;

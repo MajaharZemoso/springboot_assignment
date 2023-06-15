@@ -1,5 +1,6 @@
 package com.springassignment.eventmanagement.controller;
 
+import com.springassignment.eventmanagement.dto.UsersDTO;
 import com.springassignment.eventmanagement.entity.Users;
 import com.springassignment.eventmanagement.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,20 +8,24 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.NoSuchElementException;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.mockito.Mockito.*;
 
 class UserControllerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private ModelMapper modelMapper;
 
     @InjectMocks
     private UserController userController;
@@ -31,76 +36,60 @@ class UserControllerTest {
     }
 
     @Test
-    void getAllUsers_ReturnsListOfUsers() {
-        List<Users> users = Arrays.asList(new Users(1, "User 1"), new Users(2, "User 2"));
-        when(userService.findAll()).thenReturn(users);
-
-        List<Users> result = userController.getAllUsers();
-
-        assertEquals(users, result);
-    }
-
-    @Test
-    void getUsersById_WithValidId_ReturnsUser() {
-        // Arrange
+    void getUserById_WithValidId_ReturnsUserDTO() {
         int userId = 1;
         Users user = new Users(userId, "User 1");
+        UsersDTO userDTO = new UsersDTO(userId, "User 1");
         when(userService.findById(userId)).thenReturn(user);
+        when(modelMapper.map(user, UsersDTO.class)).thenReturn(userDTO);
 
-        ResponseEntity<Users> response = userController.getUsersById(userId);
+        ResponseEntity<UsersDTO> response = userController.getUserById(userId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(user, response.getBody());
+        assertEquals(userDTO, response.getBody());
     }
 
     @Test
-    void getUsersById_WithInvalidId_ReturnsNotFound() {
+    void getUserById_WithInvalidId_ReturnsNotFound() {
         int userId = 1;
         when(userService.findById(userId)).thenThrow(NoSuchElementException.class);
 
-        ResponseEntity<Users> response = userController.getUsersById(userId);
+        ResponseEntity<UsersDTO> response = userController.getUserById(userId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    void createUser_ReturnsCreatedUser() {
-
+    void createUser_ReturnsCreatedUserDTO() {
+        UsersDTO userDTO = new UsersDTO(1, "User 1");
         Users user = new Users(1, "User 1");
+        when(modelMapper.map(userDTO, Users.class)).thenReturn(user);
         when(userService.save(user)).thenReturn(user);
+        when(modelMapper.map(user, UsersDTO.class)).thenReturn(userDTO);
 
-        ResponseEntity<Users> response = userController.createUser(user);
+        ResponseEntity<UsersDTO> response = userController.createUser(userDTO);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(user, response.getBody());
+        assertEquals(userDTO, response.getBody());
     }
 
     @Test
-    void updateUser_WithExistingUser_ReturnsUpdatedUser() {
-
+    void deleteUser_WithExistingUser_ReturnsNoContent() {
         int userId = 1;
-        Users existingUser = new Users(userId, "User 1");
-        Users updatedUser = new Users(userId, "Updated User 1");
-        when(userService.update(userId, updatedUser)).thenReturn(updatedUser);
 
-        ResponseEntity<Users> response = userController.updateUsers(userId, updatedUser);
+        ResponseEntity<Void> response = userController.deleteUser(userId);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedUser, response.getBody());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(userService, times(1)).deleteById(userId);
     }
 
     @Test
-    void updateUser_WithNonexistentUser_ReturnsNotFound() {
-
+    void deleteUser_WithNonexistentUser_ReturnsNotFound() {
         int userId = 1;
-        Users updatedUser = new Users(userId, "Updated User 1");
-        when(userService.update(userId, updatedUser)).thenThrow(NoSuchElementException.class);
+        doThrow(NoSuchElementException.class).when(userService).deleteById(userId);
 
-
-        ResponseEntity<Users> response = userController.updateUsers(userId, updatedUser);
-
+        ResponseEntity<Void> response = userController.deleteUser(userId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
 }
